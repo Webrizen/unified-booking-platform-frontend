@@ -3,7 +3,9 @@
 import { useSearchParams } from 'next/navigation'
 import UnifySearch from '@/components/system/unify-search';
 
-export default function SearchPage() {
+import { Suspense } from 'react';
+
+function SearchPageContent() {
     const searchParams = useSearchParams()
     
     return (
@@ -14,4 +16,12 @@ export default function SearchPage() {
             </div>
         </div>
     )
+}
+
+export default function page() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <SearchPageContent />
+        </Suspense>
+    );
 }
