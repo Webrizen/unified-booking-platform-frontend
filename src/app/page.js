@@ -1,6 +1,6 @@
 import UnifySearch from '@/components/system/unify-search'
 import Link from 'next/link'
-import React from 'react'
+import React, { Suspense } from 'react'
 import {
   Star,
   Heart,
@@ -111,7 +111,9 @@ export default function page() {
           </div>
 
           <div className="flex flex-1 lg:w-1/2 relative max-w-3xl mx-auto lg:max-w-none">
+           <Suspense fallback={<div>Loading...</div>}>
             <UnifySearch />
+           </Suspense>
           </div>
         </div>
       </section>
