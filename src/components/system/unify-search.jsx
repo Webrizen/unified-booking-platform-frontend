@@ -7,15 +7,15 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Search } from 'lucide-react'
 
-export default function UnifySearch() {
-    const router = useRouter()
-    const searchParams = useSearchParams()
-    const [activeTab, setActiveTab] = useState('hotels')
-    const [searchQuery, setSearchQuery] = useState('')
+export default function UnifySearch({ searchQ }) {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [activeTab, setActiveTab] = useState('hotels');
+    const [searchQuery, setSearchQuery] = useState('');
 
     // Initialize from URL params on component mount
     useEffect(() => {
-        const tab = searchParams.get('tab') || 'hotels'
+        const tab = searchParams.get('tab') || 'hotels'                                                                                                                                                                                                          
         const query = searchParams.get('q') || ''
         
         setActiveTab(tab)
@@ -54,7 +54,7 @@ export default function UnifySearch() {
     }
 
     return (
-        <div className='w-full border border-zinc-200 dark:border-zinc-800 p-6 rounded-3xl'>
+        <div className='w-full h-min border border-zinc-200 dark:border-zinc-800 p-6 rounded-3xl'>
             <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
                 <TabsList className="grid w-full grid-cols-3 mb-6">
                     <TabsTrigger value="hotels">Hotels</TabsTrigger>

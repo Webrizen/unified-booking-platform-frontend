@@ -66,7 +66,7 @@ export default function Navbar() {
                         {/* Auth Button for Mobile/Tablet */}
                         <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:min-w-max mt-10 lg:mt-0">
                             <Link 
-                                href="/auth" 
+                                href="/auth/sign-in" 
                                 onClick={closeNavbar}
                                 className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
                                 bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/50"
