@@ -71,7 +71,7 @@ export default function page() {
 
   return (
     <>
-      <section className="relative pt-10 xl:pt-14">
+      <section className="relative py-10 xl:pt-14">
         <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12">
           <div className="mx-auto text-center lg:text-left flex flex-col max-w-3xl justify-center lg:justify-start lg:pb-8 flex-1 lg:w-1/2 lg:max-w-none">
 
@@ -90,7 +90,7 @@ export default function page() {
                 </span>
               </Link>
 
-              <Link href="/services" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-zinc-300 dark:before:border-zinc-600 before:transition-all text-zinc-700 dark:text-zinc-300 hover:before:scale-105 duration-200 group">
+              <Link href="/search" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-zinc-300 dark:before:border-zinc-600 before:transition-all text-zinc-700 dark:text-zinc-300 hover:before:scale-105 duration-200 group">
                 <span className="relative flex items-center justify-center gap-2 font-semibold">
                   Explore Services
                 </span>
@@ -110,7 +110,7 @@ export default function page() {
             </div>
           </div>
 
-          <div className="flex flex-1 lg:w-1/2 relative max-w-3xl mx-auto lg:max-w-none">
+          <div className="flex flex-1 lg:w-1/2 relative max-w-3xl mx-auto lg:max-w-none md:h-[600px] overflow-y-auto">
            <Suspense fallback={<div>Loading...</div>}>
             <UnifySearch />
            </Suspense>
@@ -235,7 +235,7 @@ export default function page() {
               Start Your Journey
             </Link>
 
-            <Link href="/services" className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-indigo-600 transition-all duration-200">
+            <Link href="/search" className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-indigo-600 transition-all duration-200">
               Browse All Services
             </Link>
           </div>
