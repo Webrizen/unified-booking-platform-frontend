@@ -112,7 +112,7 @@ export default function UnifySearch() {
 
     const handleTabChange = (value) => {
         setActiveTab(value);
-        setSelectedAmenities([]); // Reset amenities when tab changes
+        setSelectedAmenities([]);
         updateURLParams(value);
     }
 
