@@ -39,14 +39,14 @@ export default function page() {
       count: "800+",
       color: "cyan"
     }
-  ]
+  ];
 
   const stats = [
     { number: "500K+", label: "Happy Customers" },
     { number: "15K+", label: "Premium Venues" },
     { number: "95%", label: "Satisfaction Rate" },
     { number: "24/7", label: "Customer Support" }
-  ]
+  ];
 
   const testimonials = [
     {
@@ -67,7 +67,7 @@ export default function page() {
       content: "The quality of marriage gardens available here is exceptional. Highly recommended!",
       rating: 5
     }
-  ]
+  ];
 
   return (
     <>
