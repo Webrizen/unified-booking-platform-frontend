@@ -1,7 +1,8 @@
 "use client"
 import Link from 'next/link'
-import { useState } from 'react'
-import { LogIn, Menu, X } from 'lucide-react'; 
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { Menu, X, LogOut, User } from 'lucide-react'; 
 
 const navLinks = [
     { name: 'Home', href: '/' },
@@ -10,14 +11,52 @@ const navLinks = [
     { name: 'Parks', href: '/parks' }
 ];
 
+// Cookie utility functions
+function getCookie(name) {
+    if (typeof document === 'undefined') return null;
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function deleteCookie(name) {
+    if (typeof document === 'undefined') return;
+    document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
+}
+
 export default function Navbar() {
     const [navIsOpened, setNavIsOpened] = useState(false)
+    const [isLoggedIn, setIsLoggedIn] = useState(false)
+    const router = useRouter()
+
+    // Check if user is logged in on component mount
+    useEffect(() => {
+        const token = getCookie('token')
+        setIsLoggedIn(!!token)
+    }, [])
+
     const closeNavbar = () => {
         setNavIsOpened(false)
     }
+
     const toggleNavbar = () => {
         setNavIsOpened(navIsOpened => !navIsOpened)
     }
+
+    const handleLogout = () => {
+        // Clear the token cookie
+        deleteCookie('token')
+        
+        // Update login state
+        setIsLoggedIn(false)
+        
+        // Close mobile navbar if open
+        closeNavbar()
+        
+        // Redirect to sign-in page
+        router.push('/auth/sign-in')
+    }
+
     return (
         <>
             <div
@@ -62,18 +101,27 @@ export default function Navbar() {
                                 </li>
                             ))}
                         </ul>
-                        
-                        {/* Auth Button for Mobile/Tablet */}
-                        <div className="flex flex-col sm:flex-row sm:items-center gap-4 lg:min-w-max mt-10 lg:mt-0">
+                    </div>
+                    
+                    {/* Desktop Auth Button (shown only on desktop) */}
+                    <div className="lg:flex md:items-center items-end md:min-w-max">
+                        {isLoggedIn ? (
+                            <button 
+                                onClick={handleLogout}
+                                className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
+                                bg-red-600 text-white shadow-red-600/30 hover:bg-red-700 hover:shadow-red-600/50 text-sm"
+                            >
+                                <span>Logout</span>
+                            </button>
+                        ) : (
                             <Link 
                                 href="/auth/sign-in" 
-                                onClick={closeNavbar}
                                 className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
-                                bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/50"
+                                bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/50 text-sm"
                             >
-                                <span className="relative text-sm">Sign In</span>
+                                <span>Sign In</span>
                             </Link>
-                        </div>
+                        )}
                     </div>
                     
                     {/* Mobile Menu Toggle Button */}
