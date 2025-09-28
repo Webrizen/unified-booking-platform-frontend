@@ -212,7 +212,7 @@ export default function page() {
             {/* Quick Actions */}
             <div className="pt-4 border-t">
               <h4 className="font-medium mb-3">Quick Actions</h4>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid md:grid-cols-4 grid-cols-2 gap-2">
                 <Button variant="outline" size="sm" className="flex items-center gap-2">
                   <Building className="w-4 h-4" />
                   Book Hotel
