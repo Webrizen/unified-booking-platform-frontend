@@ -6,9 +6,9 @@ import { Menu, X, LogOut, User } from 'lucide-react';
 
 const navLinks = [
     { name: 'Home', href: '/' },
-    { name: 'Hotels', href: '/hotels' },
-    { name: 'Gardens', href: '/gardens' },
-    { name: 'Parks', href: '/parks' }
+    { name: 'Hotels', href: '/search?tab=hotels' },
+    { name: 'Gardens', href: '/search?tab=gardens' },
+    { name: 'Parks', href: '/search?tab=parks' }
 ];
 
 // Cookie utility functions
@@ -29,10 +29,62 @@ export default function Navbar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false)
     const router = useRouter()
 
-    // Check if user is logged in on component mount
+    // Check if user is logged in on component mount and set up real-time monitoring
     useEffect(() => {
+        // Initial check
         const token = getCookie('token')
         setIsLoggedIn(!!token)
+
+        // Set up interval to check token every second
+        const intervalId = setInterval(() => {
+            const currentToken = getCookie('token')
+            setIsLoggedIn(prevState => {
+                // Only update if state actually changed
+                if (!!currentToken !== prevState) {
+                    return !!currentToken
+                }
+                return prevState
+            })
+        }, 1000) // Check every second
+
+        // Cleanup interval on component unmount
+        return () => clearInterval(intervalId)
+    }, [])
+
+    // Alternative: More efficient approach using event listeners
+    // This monitors storage events (useful for multiple tabs) and periodic checks
+    useEffect(() => {
+        const checkAuthStatus = () => {
+            const token = getCookie('token')
+            setIsLoggedIn(prevState => {
+                const newState = !!token
+                if (newState !== prevState) {
+                    console.log('Auth status changed:', newState ? 'Logged in' : 'Logged out')
+                }
+                return newState
+            })
+        }
+
+        // Check immediately
+        checkAuthStatus()
+
+        // Set up interval for periodic checks
+        const intervalId = setInterval(checkAuthStatus, 1000)
+
+        // Listen for storage events (useful for multiple tabs)
+        const handleStorageChange = (e) => {
+            if (e.key === 'token' || e.key === null) {
+                checkAuthStatus()
+            }
+        }
+
+        window.addEventListener('storage', handleStorageChange)
+
+        // Cleanup
+        return () => {
+            clearInterval(intervalId)
+            window.removeEventListener('storage', handleStorageChange)
+        }
     }, [])
 
     const closeNavbar = () => {
@@ -47,7 +99,7 @@ export default function Navbar() {
         // Clear the token cookie
         deleteCookie('token')
         
-        // Update login state
+        // Update login state immediately
         setIsLoggedIn(false)
         
         // Close mobile navbar if open
@@ -55,6 +107,13 @@ export default function Navbar() {
         
         // Redirect to sign-in page
         router.push('/auth/sign-in')
+    }
+
+    // Optional: Manual check function for debugging
+    const manualCheck = () => {
+        const token = getCookie('token')
+        console.log('Manual check - Token exists:', !!token, 'Token:', token)
+        setIsLoggedIn(!!token)
     }
 
     return (
@@ -106,19 +165,35 @@ export default function Navbar() {
                     {/* Desktop Auth Button (shown only on desktop) */}
                     <div className="lg:flex md:items-center items-end md:min-w-max">
                         {isLoggedIn ? (
-                            <button 
-                                onClick={handleLogout}
-                                className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
-                                bg-red-600 text-white shadow-red-600/30 hover:bg-red-700 hover:shadow-red-600/50 text-sm"
-                            >
-                                <span>Logout</span>
-                            </button>
+                            <div className="flex items-center gap-4">
+                                {/* Optional: Display user info or status indicator */}
+                                <div className="hidden sm:flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                    <span>Connected</span>
+                                </div>
+                                <button 
+                                    onClick={handleLogout}
+                                    className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
+                                    bg-red-600 text-white shadow-red-600/30 hover:bg-red-700 hover:shadow-red-600/50 text-sm"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    <span>Logout</span>
+                                </button>
+                                {/* Debug button - remove in production */}
+                                {/* <button 
+                                    onClick={manualCheck}
+                                    className="px-3 py-1 text-xs border border-zinc-300 rounded"
+                                >
+                                    Check Auth
+                                </button> */}
+                            </div>
                         ) : (
                             <Link 
                                 href="/auth/sign-in" 
                                 className="relative flex justify-center items-center gap-2 px-6 py-3 rounded-full font-semibold transition-all duration-300
                                 bg-indigo-600 text-white shadow-indigo-600/30 hover:bg-indigo-700 hover:shadow-indigo-600/50 text-sm"
                             >
+                                <User className="w-4 h-4" />
                                 <span>Sign In</span>
                             </Link>
                         )}

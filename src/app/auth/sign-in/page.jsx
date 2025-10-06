@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,21 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [countdown, setCountdown] = useState(3);
   const router = useRouter();
+
+  // Countdown effect for redirect
+  useEffect(() => {
+    if (isSuccess && countdown > 0) {
+      const timer = setTimeout(() => {
+        setCountdown(countdown - 1);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else if (isSuccess && countdown === 0) {
+      router.push('/dashboard');
+    }
+  }, [isSuccess, countdown, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -34,14 +48,16 @@ export default function AdminLoginPage() {
         const data = await response.json();
         const token = data.token; 
         CookiesHandler({ token });
-        router.push('/dashboard');
+        setIsSuccess(true);
+        setIsLoading(false);
+        // Countdown will handle the redirect
       } else {
         const data = await response.json();
         setError(data.message || 'Login failed. Please check your credentials.');
+        setIsLoading(false);
       }
     } catch (err) {
       setError('Network error. Please try again.');
-    } finally {
       setIsLoading(false);
     }
   };
@@ -56,14 +72,14 @@ export default function AdminLoginPage() {
               <Shield className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
             <span className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-              Sign in
+              {isSuccess ? 'Success!' : 'Sign in'}
             </span>
           </div>
           <h1 className="text-3xl font-bold text-zinc-900 dark:text-white mb-2">
-            Secure Access
+            {isSuccess ? 'Welcome!' : 'Secure Access'}
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400">
-            Please sign in to your account
+            {isSuccess ? 'Redirecting to dashboard...' : 'Please sign in to your account'}
           </p>
         </div>
 
@@ -72,15 +88,25 @@ export default function AdminLoginPage() {
             <div className="flex items-center justify-center gap-2 mb-2">
               <Building2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <CardTitle className="text-2xl text-center text-zinc-900 dark:text-white">
-                Login
+                {isSuccess ? 'Login Successful' : 'Login'}
               </CardTitle>
             </div>
             <CardDescription className="text-center text-zinc-600 dark:text-zinc-400">
-              Enter your credentials
+              {isSuccess ? 'You will be redirected shortly' : 'Enter your credentials'}
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
+            {/* Success Alert */}
+            {isSuccess && (
+              <Alert className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
+                <AlertDescription className="text-green-800 dark:text-green-200 flex items-center gap-2">
+                  <Shield className="w-4 h-4" />
+                  Login successful! Redirecting in {countdown}s...
+                </AlertDescription>
+              </Alert>
+            )}
+
             {/* Error Alert */}
             {error && (
               <Alert variant="destructive" className="border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
@@ -91,97 +117,116 @@ export default function AdminLoginPage() {
               </Alert>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-zinc-700 dark:text-zinc-300 font-medium">
-                  Email
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    placeholder="admin@company.com"
-                    className="pl-10 bg-white dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 focus:border-indigo-500 dark:focus:border-indigo-400"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    disabled={isLoading}
-                  />
+            {!isSuccess ? (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Email Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-zinc-700 dark:text-zinc-300 font-medium">
+                    Email
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                    <Input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      placeholder="admin@company.com"
+                      className="pl-10 bg-white dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 focus:border-indigo-500 dark:focus:border-indigo-400"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isLoading}
+                    />
+                  </div>
                 </div>
-              </div>
 
-              {/* Password Field */}
-              <div className="space-y-2">
-                <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300 font-medium">
-                  Password
-                </Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
-                  <Input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    placeholder="Enter your password"
-                    className="pl-10 pr-10 bg-white dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 focus:border-indigo-500 dark:focus:border-indigo-400"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    disabled={isLoading}
-                  />
+                {/* Password Field */}
+                <div className="space-y-2">
+                  <Label htmlFor="password" className="text-zinc-700 dark:text-zinc-300 font-medium">
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-3 h-4 w-4 text-zinc-400" />
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
+                      required
+                      placeholder="Enter your password"
+                      className="pl-10 pr-10 bg-white dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 focus:border-indigo-500 dark:focus:border-indigo-400"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                      disabled={isLoading}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-zinc-400" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-zinc-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Forgot Password Link */}
+                <div className="flex justify-end">
                   <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-                    onClick={() => setShowPassword(!showPassword)}
+                    variant="link"
+                    className="p-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
+                    onClick={() => router.push('/auth/forgot-password')}
                     disabled={isLoading}
                   >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-zinc-400" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-zinc-400" />
-                    )}
+                    Forgot password?
                   </Button>
                 </div>
-              </div>
 
-              {/* Forgot Password Link */}
-              <div className="flex justify-end">
+                {/* Submit Button */}
                 <Button
-                  variant="link"
-                  className="p-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 text-sm font-medium"
-                  onClick={() => router.push('/auth/forgot-password')}
+                  type="submit"
                   disabled={isLoading}
+                  className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 transition-all duration-200 shadow-lg shadow-indigo-500/25"
                 >
-                  Forgot password?
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Authenticating...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4" />
+                      Access Dashboard
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
+                  )}
                 </Button>
-              </div>
-
-              {/* Submit Button */}
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 transition-all duration-200 shadow-lg shadow-indigo-500/25"
-              >
-                {isLoading ? (
+              </form>
+            ) : (
+              // Success state - show redirect button
+              <div className="space-y-4">
+                <Button
+                  onClick={() => router.push('/dashboard')}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 transition-all duration-200 shadow-lg shadow-green-500/25"
+                >
                   <div className="flex items-center gap-2">
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Authenticating...
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    Access Dashboard
                     <ArrowRight className="w-4 h-4" />
+                    Go to Dashboard Now ({countdown}s)
                   </div>
-                )}
-              </Button>
-            </form>
+                </Button>
+                
+                <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
+                  Click the button above to redirect immediately
+                </p>
+              </div>
+            )}
 
             {/* Security Notice */}
             <Alert className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20">
@@ -192,24 +237,26 @@ export default function AdminLoginPage() {
             </Alert>
 
             {/* Footer Links */}
-            <div className="text-center space-y-3 pt-2">
-              <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                New user?{' '}
-                <Button
-                  variant="link"
-                  className="p-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
-                  onClick={() => router.push('/auth/sign-up')}
-                  disabled={isLoading}
-                >
-                  Sign up here
-                </Button>
-              </p>
+            {!isSuccess && (
+              <div className="text-center space-y-3 pt-2">
+                <p className="text-sm text-zinc-600 dark:text-zinc-400">
+                  New user?{' '}
+                  <Button
+                    variant="link"
+                    className="p-0 text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+                    onClick={() => router.push('/auth/sign-up')}
+                    disabled={isLoading}
+                  >
+                    Sign up here
+                  </Button>
+                </p>
 
-              <div className="text-xs text-zinc-500 dark:text-zinc-500 space-y-1">
-                <p>Ensure you're on a secure connection</p>
-                <p>v2.4.1 • Webrizen</p>
+                <div className="text-xs text-zinc-500 dark:text-zinc-500 space-y-1">
+                  <p>Ensure you're on a secure connection</p>
+                  <p>v2.4.1 • Webrizen</p>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
 
