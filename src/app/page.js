@@ -1,6 +1,10 @@
+'use client'
+
 import UnifySearch from '@/components/system/unify-search'
 import Link from 'next/link'
-import React, { Suspense } from 'react'
+import React, { Suspense, useState } from 'react'
+import { Swiper, SwiperSlide } from 'swiper/react'
+import { Autoplay, EffectFade, Navigation, Pagination } from 'swiper/modules'
 import {
   Star,
   Heart,
@@ -16,7 +20,40 @@ import {
   CheckCircle
 } from 'lucide-react'
 
-export default function page() {
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/effect-fade'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
+const heros = [
+  {
+    title: "Luxury Hotels",
+    slug: "hotels",
+    backgroundImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    description: "Discover premium accommodations with world-class amenities and exceptional service"
+  },
+  {
+    title: "Marriage Gardens",
+    slug: "gardens",
+    backgroundImage: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
+    description: "Find the perfect venue for your special day with stunning decor and catering options"
+  },
+  {
+    title: "Water Parks",
+    slug: "parks",
+    backgroundImage: "https://images.unsplash.com/photo-1575429198097-0414ec08e8cd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+    description: "Experience thrilling adventures with family-friendly water attractions and facilities"
+  }
+];
+
+export default function Page() {
+  const [activeSlide, setActiveSlide] = useState(0);
+
+  const handleSlideChange = (swiper) => {
+    setActiveSlide(swiper.activeIndex);
+  };
+
   const features = [
     {
       icon: Building,
@@ -71,50 +108,88 @@ export default function page() {
 
   return (
     <>
-      <section className="relative py-10 xl:pt-14">
-        <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12">
-          <div className="mx-auto text-center lg:text-left flex flex-col max-w-3xl justify-center lg:justify-start lg:pb-8 flex-1 lg:w-1/2 lg:max-w-none">
+      {/* Hero Section with Swiper */}
+      <section className="relative min-h-screen flex items-center">
+        {/* Background Image with Transition */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
+          style={{
+            backgroundImage: `url(${heros[activeSlide].backgroundImage})`
+          }}
+        >
+          {/* Dark Overlay */}
+          <div className="absolute inset-0 bg-black/50"></div>
+        </div>
 
-            <h1 className="text-indigo-950 dark:text-white text-4xl/snug sm:text-6xl/tight lg:text-5xl/tight xl:text-6xl/tight font-semibold">
-              Your World of Stays and Celebrations. <span className="bg-gradient-to-r from-indigo-600 to-indigo-600 bg-clip-text text-transparent">Seamlessly.</span>
-            </h1>
+        <div className="relative z-10 w-full">
+          <Swiper
+            modules={[Autoplay, EffectFade, Navigation, Pagination]}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            speed={1000}
+            autoplay={{
+              delay: 5000,
+              disableOnInteraction: false,
+            }}
+            navigation={{
+              nextEl: '.swiper-button-next',
+              prevEl: '.swiper-button-prev',
+            }}
+            pagination={{
+              clickable: true,
+              el: '.swiper-pagination',
+            }}
+            onSlideChange={handleSlideChange}
+            className="w-full"
+          >
+            {heros.map((hero, index) => (
+              <SwiperSlide key={index}>
+                <div className="mx-auto lg:max-w-7xl w-full px-5 sm:px-10 md:px-12 lg:px-5 flex flex-col lg:flex-row gap-8 lg:gap-10 xl:gap-12 min-h-screen items-center py-20">
+                  <div className="mx-auto text-center lg:text-left flex flex-col max-w-3xl justify-center lg:justify-start lg:pb-8 flex-1 lg:w-1/2 lg:max-w-none">
+                    <h1 className="text-white text-4xl/snug sm:text-6xl/tight lg:text-5xl/tight xl:text-6xl/tight font-semibold">
+                      Your World of {hero.title}. <span className="bg-gradient-to-r from-indigo-400 to-indigo-200 bg-clip-text text-transparent">Seamlessly.</span>
+                    </h1>
 
-            <p className="mt-6 text-zinc-700 dark:text-zinc-300 text-lg lg:text-xl max-w-2xl lg:max-w-none mx-auto leading-relaxed">
-              We united the best Hotels, premier Marriage Gardens, and thrilling Water Parks into one stunning experience. Book with confidence and create unforgettable memories.
-            </p>
+                    <p className="mt-6 text-zinc-200 text-lg lg:text-xl max-w-2xl lg:max-w-none mx-auto leading-relaxed">
+                      {hero.description}
+                    </p>
 
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start flex-wrap">
-              <Link href="/auth/sign-up" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:transition-all active:before:bg-indigo-700 text-white hover:before:bg-indigo-800 before:bg-indigo-600 hover:before:scale-105 duration-200 group">
-                <span className="relative flex items-center justify-center gap-2 font-semibold">
-                  Get Started Free
-                </span>
-              </Link>
+                    <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start flex-wrap">
+                      <Link href="/auth/sign-up" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:transition-all active:before:bg-indigo-700 text-white hover:before:bg-indigo-800 before:bg-indigo-600 hover:before:scale-105 duration-200 group">
+                        <span className="relative flex items-center justify-center gap-2 font-semibold">
+                          Get Started Free
+                        </span>
+                      </Link>
 
-              <Link href="/search" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-zinc-300 dark:before:border-zinc-600 before:transition-all text-zinc-700 dark:text-zinc-300 hover:before:scale-105 duration-200 group">
-                <span className="relative flex items-center justify-center gap-2 font-semibold">
-                  Explore Services
-                </span>
-              </Link>
-            </div>
+                      <Link href="/search" className="relative px-8 py-4 before:absolute before:inset-0 before:rounded-xl before:border-2 before:border-zinc-300 before:transition-all text-white hover:before:scale-105 duration-200 group">
+                        <span className="relative flex items-center justify-center gap-2 font-semibold">
+                          Explore Services
+                        </span>
+                      </Link>
+                    </div>
 
-            {/* Trust indicators */}
-            <div className="mt-8 flex items-center justify-center lg:justify-start gap-6 text-sm text-zinc-600 dark:text-zinc-400">
-              <div className="flex items-center gap-1">
-                <Shield className="w-4 h-4" />
-                <span>Secure Booking</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <CheckCircle className="w-4 h-4" />
-                <span>Best Price Guarantee</span>
-              </div>
-            </div>
-          </div>
+                    {/* Trust indicators */}
+                    <div className="mt-8 flex items-center justify-center lg:justify-start gap-6 text-sm text-zinc-300">
+                      <div className="flex items-center gap-1">
+                        <Shield className="w-4 h-4" />
+                        <span>Secure Booking</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Best Price Guarantee</span>
+                      </div>
+                    </div>
+                  </div>
 
-          <div className="flex flex-1 lg:w-1/2 relative max-w-3xl mx-auto lg:max-w-none md:h-[600px] overflow-y-auto">
-           <Suspense fallback={<div>Loading...</div>}>
-            <UnifySearch />
-           </Suspense>
-          </div>
+                  <div className="flex flex-1 lg:w-1/2 relative max-w-3xl mx-auto lg:max-w-none md:h-[600px] overflow-y-auto">
+                    <Suspense fallback={<div className="text-white">Loading...</div>}>
+                      <UnifySearch title={hero.slug} />
+                    </Suspense>
+                  </div>
+                </div>
+              </SwiperSlide>
+            ))}
+          </Swiper>
         </div>
       </section>
 

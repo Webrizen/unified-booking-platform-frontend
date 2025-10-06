@@ -13,10 +13,10 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Search, Star, MapPin, Calendar, Users, Building, Palette, Droplets, Loader2, Filter, X, IndianRupee } from 'lucide-react'
 
-export default function UnifySearch() {
+export default function UnifySearch({ title }) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [activeTab, setActiveTab] = useState('hotels');
+    const [activeTab, setActiveTab] = useState(title);
     const [searchQuery, setSearchQuery] = useState('');
     const [resources, setResources] = useState(null);
     const [loading, setLoading] = useState(false);
