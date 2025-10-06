@@ -25,6 +25,7 @@ import 'swiper/css'
 import 'swiper/css/effect-fade'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
+import Marquee from '@/components/system/marquee'
 
 const heros = [
   {
@@ -108,10 +109,14 @@ export default function Page() {
 
   return (
     <>
+      <Marquee
+        speed="fast"
+        direction="left"
+      />
       {/* Hero Section with Swiper */}
       <section className="relative min-h-screen flex items-center">
         {/* Background Image with Transition */}
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out"
           style={{
             backgroundImage: `url(${heros[activeSlide].backgroundImage})`

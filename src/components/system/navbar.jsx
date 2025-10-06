@@ -136,7 +136,7 @@ export default function Navbar() {
                                 <span className="w-3 h-6 rounded-r-full flex bg-blue-600 mt-2 transition-colors duration-300 group-hover:bg-blue-500" />
                             </span>
                             <span className="inline-flex text-xl font-extrabold text-zinc-950 dark:text-white transition-colors duration-300 group-hover:text-indigo-600">
-                                UnifyBook
+                                KshitijBook
                             </span>
                         </Link>
                     </div>
